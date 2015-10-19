@@ -12,7 +12,6 @@ training_block       = []
 switch_button_images = []
 stim_feature_list    = []
 item_index           = []
-endtraining          = False
 
 # Text stim for the label of the final category
 final_cat_label = visual.TextStim(win, text = '', font = text_font, color= text_color,
@@ -57,7 +56,7 @@ present_instructions(win, instructions, instruction_text, phase)
 
 ## __________________________________________________________
 # Execute tutorial (?)                                                   |
-tutorialskip = True # True to skip
+tutorialskip = False # True to skip
 if not tutorialskip:
     switch_tutorial(win, instructions, image_start,
         [[-100,-125],[100,-125],[0,-225]], text_font,
@@ -144,7 +143,8 @@ for block_num in range(1, num_training_blocks+1):
 
             # Set feedback text, set image positions | stim properties 
             if current_category == start_category:
-                feedback = 'Incorrect... you made a ' + current_category + ' leaf.'
+                feedback = ('Incorrect... you made a ' + 
+                    current_category + ' leaf. Try again!')
                 accuracy = 0
 
                 if current_category == 'Lape':
@@ -170,7 +170,8 @@ for block_num in range(1, num_training_blocks+1):
             drawall(win, [completed_image, instructions, final_cat_label])
         
         	# Log data
-            current_trial = [condition, subject_number, phase, block_num, trial_num,
+            current_trial = [subject_number, condition, shj_condition, 
+                balance_condition, phase, block_num, trial_num,
                 attempt_counter, file_name, list(completed_properties), 
                 list(start_properties), start_category, current_category, rt, 
                 accuracy, sum(button_pushed)]
@@ -180,42 +181,22 @@ for block_num in range(1, num_training_blocks+1):
             write_file(subject_file, subject_data,',')
 
             # Print trial info
-            print ['\nBlock ' + str(block_num), 'Trial ' + str(trial_num) + '-' + str(attempt_counter) + ' information:']
+            print ('Block ' + str(block_num), 'Trial ' + str(trial_num) + '-' +
+                str(attempt_counter) + ' information:')
             print ['finalimage: ', list(completed_properties)]
             print ['buttons pushed: ', button_pushed]
             print ['original cat: ', start_category]
             print ['switched cat: ', current_category]
             print ['accuracy: ', accuracy]
-    
-        # End trial
-        core.wait(.5)        
-        click_to_continue(cursor)
+            
+            click_to_continue(cursor)
+
+        # End trial 
         trial_num = trial_num + 1
-        accuracy = 0
+        accuracy  = 0
+        click_to_continue(cursor)
+
   
     # Reset image locs
     for i in training_block:
         i[0].setPos([0,150])
-        
-# ##  initiate validation
-#     if blocknum == 1 or (blocknum + 1) % 2 == 0: 
-#         phase = 'validation'
-#         if checkupcounter == 0:
-#             valaccuracylist = []
-#         if checkupcounter > 6:
-#             phase = 'switchit'
-#             endtraining = True
-#         else:
-#             print '\n|----------executing validation-----------|\n'
-#             print ['check-up number',checkupcounter + 1]
-#             execfile('test_classify.py')
-#         ##  get val vars
-#             [valinstructs, endtraining, checkupcounter] = setvalvars(checkupcounter,
-#                 valaccuracy,valaccuracylist,
-#                 [fcolor,ffont,fsize],win)
-#         ##  give feedback
-#             phase = 'switchit'
-#             drawall(win,[valinstructs[0],valinstructs[1]])
-#             if 'q' in event.waitKeys(keyList=['q','space']):
-#                 print 'User Terminated'
-#                 core.quit()

@@ -1,6 +1,6 @@
 #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
 #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
-#  #  #  SWITCHRITE SUPPORT SCRIPTS #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
+#  #  #  SWITCHRITE SUPPORT FUNCTIONS  #  #  #  #  #  #  #  #  #  #  #  #  #  #
 #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
 #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
 
@@ -16,7 +16,7 @@ def check_directory(dir):
         os.makedirs(dir)
 
 
-# create text entry window and return subject info 
+# Create text entry window and return subject info 
 #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
 def get_subject_info(experiment_name, conditions, data_location):
     ss_info = []
@@ -45,23 +45,23 @@ def get_subject_info(experiment_name, conditions, data_location):
         return [int(id),int(condition),subject_file]
 
 
-# re-assigns dimension and feature values based on counterbalance lists
+# Re-assigns dimension and feature values based on counterbalance lists
 #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
 def counterbalance(subject_number, stimuli, feature_balance_list,
                     dimension_balance_list, feature_names):
 
-    # select a counterbalance condition based on subject
+    # Select a counterbalance condition based on subject
     n_conditions = len(feature_balance_list)
     condition    = subject_number % n_conditions
     
-    ## balance features
+    # Balance features
     feature_assignment = feature_balance_list[condition] == 1
     print ['FLIPPED FEATURES:', feature_assignment]
     for i in stimuli:
         features = i[2]
         features[feature_assignment] = 1 - features[feature_assignment]
         stimuli[stimuli.index(i)][2] = features
-    ## balance dimensions and create labels    
+    # Balance dimensions and create labels    
     dimension_assignment = dimension_balance_list[condition] - 1
     orig_feature_names   = list(feature_names)
     count = 0
@@ -77,7 +77,19 @@ def counterbalance(subject_number, stimuli, feature_balance_list,
     return [stimuli, condition, feature_names, dimension_assignment]
 
 
-# flatten a list
+# copies the data file to a series of dropbox folders
+#  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
+def copy_2_db(file_name, experiment_name):
+    copy_folders = [ #add your own!
+        'C:\\Users\\klab\\Dropbox\\PSYCHOPY DATA\\' + experiment_name + '\\',
+        'C:\\Users\\klab\\Dropbox\\garrett\\PSYCHOPY DATA\\' + experiment_name + '\\']
+
+    for i in copy_folders:
+        check_directory(i)
+        shutil.copy(file_name,i)
+        
+
+# Flatten a list
 #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
 def flatten(LIST):
     for i in LIST:
@@ -249,7 +261,7 @@ def write_file(file_name, data, delim):
 #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
 
 
-#  Switch Functions 
+#  Switch Train Functions 
 #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
 #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
 
@@ -302,7 +314,7 @@ def get_switch_buttons(stimulus_list, feature_names, button_locations,
     else:
         images = list(switch_button_images)
 
-    # Shuffle images
+    # Shuffle feature images
     if tutorial != True:
         rnd.shuffle(images)
     
@@ -454,8 +466,8 @@ def switch_tutorial(win, instructions, image_start, button_locations,
 
     # Tutorial screen 4        
     instructions.setText("    In this case, the target category (a happy face)" 
-                         " would have different eyes and a different mouth, so"
-                         " practice \nclicking on the buttons to make the image"
+                         " would have\ndifferent eyes and a different mouth, so"
+                         " practice clicking on\nthe buttons to make the image"
                          " fit the target category.")
     drawall(win, [instructions, tut_stimuli[0][0], button_images, button_labels])
     
@@ -482,9 +494,9 @@ def switch_tutorial(win, instructions, image_start, button_locations,
     # Tutorial screen 6            
     while not 'Done' in tut_response:
         tut_stimuli[2][0].setPos([150,175]) 
-        instructions.setText("        When you complete your changes you will"
-                             "click the done button.\n\n You will then be"
-                             " provided feedback about the example you created.")
+        instructions.setText("    When you complete your changes you will"
+                             " click the done button.\nYou will then be"
+                             " provided feedback about the example you created!")
         enter_to_cont.setText('Click the done button to receive feedback.')
 
         drawall(win,[instructions, tut_stimuli[2][0], tut_stim_lab,
@@ -495,7 +507,7 @@ def switch_tutorial(win, instructions, image_start, button_locations,
 
     # Tutorial screen 7
     enter_to_cont.setText('Press the spacebar to continue')
-    instructions.setText("Correct! You made a member of the Happy Face category.")
+    instructions.setText('Correct! You made a member of the "Happy Face" category.')
     tut_stim_lab.setText("Happy Face")
     drawall(win, [instructions, tut_stimuli[2][0], tut_stim_lab, enter_to_cont])
     
@@ -507,17 +519,17 @@ def switch_tutorial(win, instructions, image_start, button_locations,
     tut_stim_lab.setPos([0,50])
     tut_stim_lab.setText("Alright! It looks like you've got the hang of it."
                        "\n\nRemember: your goal in the following task is to"
-                       "learn about two new categories by making changes just"
+                       " learn about two new categories by making changes, just"
                        " like you practiced.\n\nAt first you will have to guess"
                        " what changes to make in order to produce a member of"
                        " the requested category.  You will receive feedback"
                        " that will help guide your learning.\n\nImportantly,"
-                       " you will be tested at the end of this task to see how"
+                       " you will be tested at the end of this task to see how well"
                        " you learned the categories.\n\nPlease ask the experimenter"
                        " if you have any questions.")
     enter_to_cont.setText('Press the spacebar to begin the experiment')
     drawall(win, [tut_stim_lab, enter_to_cont])
-    
+
     # Clear some variables
     buttonimages = []
     buttonlabels = []
@@ -530,12 +542,12 @@ def switch_tutorial(win, instructions, image_start, button_locations,
 
 
 
-
 # waits for responses and completes examples corresponding to user input
 #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
 def switch_gui(win, cursor, timer, stimulus_list, trial_info, switch_labels,
                 button_images, click_rectangles, feature_names, instructions,
-                switch_matrix, button_covers, cat_lab_fin, target_category, phase):
+                switch_matrix, button_covers, cat_lab_fin, 
+                target_category, phase):
 
     # Determine trial properites
     current_trial      = list(trial_info)
@@ -555,15 +567,16 @@ def switch_gui(win, cursor, timer, stimulus_list, trial_info, switch_labels,
         # Draw trial for all trials > 1
         if num_responses > 0:
             instructions.setText(
-            "Here is what you've done so far to make this a " + target_category + ". Change another feature OR click done")    
-            drawall(win, [current_image, click_rectangles, button_images, instructions,
-                trial_covers, cat_lab_fin])
-            core.wait(.5)
+                "Here is what you've done so far to make this a " + 
+                target_category + ". Change another feature OR click done.")    
+            drawall(win, [current_image, click_rectangles, button_images, 
+                instructions, trial_covers, cat_lab_fin])
+            core.wait(.25)
         # Draw first trial
         else:
-            drawall(win, [current_image, click_rectangles, button_images, instructions,
-                button_covers[-1]])
-            core.wait(.5)
+            drawall(win, [current_image, click_rectangles, button_images, 
+                instructions, button_covers[-1]])
+            core.wait(.25)
         # Get response 
         [response, rt] = button_gui(cursor, timer, click_rectangles, switch_labels)                
         print response
@@ -609,3 +622,186 @@ def switch_gui(win, cursor, timer, stimulus_list, trial_info, switch_labels,
                         num_responses = 0
 
     return [new_example_info, button_pushed, rt]
+
+
+#  Classify Train Functions 
+#  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
+#  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
+
+# runs switchit tutorial
+#  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
+def classify_tutorial(win, instructions, image_start, buttons, button_text,
+    text_font, text_color, text_size, cursor, timer, image_sizes):
+    
+    # Initialize tutorial vars    
+    image_directories = [os.getcwd() + '\\tutorial\\']
+    enter_to_cont = visual.TextStim(win, text = 'Press the spacebar to continue',
+        wrapWidth = 1000, color = text_color, font = text_font, 
+        height = text_size, pos = [0, -330])
+    x = visual.TextStim(win, text = 'X', wrapWidth = 1000, color = text_color,
+        font = text_font, height = 100, pos = image_start)
+    final_instructs = visual.TextStim(win, text = '', wrapWidth = 1000,
+        color = text_color, font = text_font, height = text_size, pos = ([0,50]))
+    
+    label_list = ['Unhappy', 'Happy']
+    button_text[0].setText('Unhappy')
+    button_text[1].setText('Happy')
+    
+    # Grab tutorial stimuli    
+    tut_stimuli  = []
+    tut_response = []
+    tut_rt       =[]
+    
+    for i in image_directories:
+        temp = []
+        for j in os.listdir(i):
+            if j[j.find('.'):] in ['.jpg','.png','.jpeg']:
+                tut_stimuli.append ([
+                    visual.ImageStim(win, image = i + j, name = j, 
+                       pos = image_start), j])
+
+    # Tutorial screen 1    
+    instructions.setText("    At the start of each trial you will see an image"
+        " in the location above.\nThe image will be a member of one of the"
+        " categories you are learning about.")
+    drawall(win,[instructions, x, enter_to_cont])
+    core.wait(1)
+    if 'q' in event.waitKeys(keyList = ['q','space']):
+        print 'User Terminated'
+        core.quit()
+    
+    # Tutorial screen 2    
+    instructions.setText("    For practice, let's imagine that you are learning"
+        " to categorize\n examples of unhappy faces and happy faces.")
+    tut_stimuli[0][0].setPos(np.array(image_start) - np.array([120,0]))
+    tut_stimuli[2][0].setPos(np.array(image_start) + np.array([120,0]))
+    drawall(win,[instructions, tut_stimuli[0][0], tut_stimuli[2][0], 
+        enter_to_cont])
+    core.wait(1)
+    
+    if 'q' in event.waitKeys(keyList = ['q','space']):
+        print 'User Terminated'
+        core.quit()
+    
+    tut_stimuli[0][0].setPos(image_start)
+    tut_stimuli[2][0].setPos(image_start)
+
+    # Tutorial screen 3    
+    instructions.setText("    On each trial you will use the mouse to click on"
+        " the\ncategory name of the provided example.")
+    drawall(win, [instructions, tut_stimuli[0][0], buttons, button_text,
+        enter_to_cont])
+    if 'q' in event.waitKeys(keyList = ['q','space']):
+        print 'User Terminated'
+        core.quit()
+
+    #Tutorial screen 4    
+    instructions.setText("    You will be provided feedback about your answer."
+        "\nGo ahead and click the correct category name.")
+    drawall(win, [instructions, tut_stimuli[0][0], buttons, button_text])
+    
+    while not 'Unhappy' in tut_response:
+        [tut_response, tut_rt] = button_gui(cursor, timer, buttons, label_list)
+        
+        if 'Unhappy' in tut_response:
+            instructions.setText(
+                "Correct! This is a member of the Unhappy category")
+        if 'Happy' in tut_response:
+            instructions.setText(
+                "Incorrect... This is a member of the Unhappy category")
+            break
+        
+    # Tutorial screen 5    
+    drawall(win, [instructions, tut_stimuli[0][0], enter_to_cont])
+    if 'q' in event.waitKeys(keyList = ['q','space']):
+        print 'User Terminated'
+        core.quit()        
+
+    # Tutorial screen 6    
+    final_instructs.setText(
+        "Alright! It looks like you've got the hang of it.\n\nRemember: your"
+        " goal in the following task is to learn about two new categories by"
+        " choosing the category name, just like you practiced.\n\nAt first you"
+        " will have to guess the category.  You will receive feedback that will"
+        " help guide your learning.\n\nImportantly, you will be tested at the"
+        " end of this task to see how well you learned the categories.\n\nPlease"
+        " ask the experimenter if you have any further questions.")
+    drawall(win, [final_instructs, enter_to_cont])
+    if 'q' in event.waitKeys(keyList = ['q','space']):
+        print 'User Terminated'
+        core.quit()     
+
+    button_text[0].setText('Lape')
+    button_text[1].setText('Tannet')
+    
+
+#  Inference Test Functions 
+#  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
+#  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
+
+# Finds and formats inference images for use as buttons
+#  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
+def get_inference_buttons(stims, missing_feature, button_size, win):
+
+    # Find the appropriate stimuli
+    images = []
+    for i in stims:
+        features = i[2]
+        num_missing_features = sum(np.isnan(features))
+        if (num_missing_features == 2) and (not np.isnan(features[missing_feature])):
+            images.append(i)
+    rnd.shuffle(images) # do a quick shuffle
+
+    # Set image position and size
+    images[0][0].setPos([-100,-125])
+    images[0][0].setSize(button_size)
+    images[1][0].setPos([ 100,-125])
+    images[1][0].setSize(button_size)
+
+    button_images  = []
+    button_labels  = []
+    button_borders = []
+    
+    for i in images:  
+        # Store image stimulus
+        button_images.append(i[0])
+        # Store value for the provided feature
+        features = i[2]
+        feature_value = features[np.isnan(features) == False].astype(int)
+        button_labels.append([feature_value[0], missing_feature])
+    
+    # Make border    
+    border = visual.Rect(win, width = button_size[0]+2, height = button_size[1]+2)
+    border.setFillColor([1,1,1])
+    border.setLineColor([-1,-1,-1])
+    border.setPos([-100,-125])
+    button_borders.append(border)  
+    border = visual.Rect(win, width = button_size[0]+2, height = button_size[1]+2)
+    border.setFillColor([1,1,1])
+    border.setLineColor([-1,-1,-1])
+    border.setPos([100,-125])
+    button_borders.append(border)
+    
+    
+    return [button_images, button_labels, button_borders]
+
+
+# Finds approprtiate inference images
+#  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
+def combine_features(original, addition):
+    new_properties = np.array(original)
+    current_feature = 0
+    for i in new_properties:
+        if np.isnan(i):
+            new_properties[current_feature] = addition[current_feature]
+        current_feature = current_feature + 1
+    return new_properties
+
+
+#  Inference Test Functions 
+#  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
+#  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
+
+#  Classify Test Functions 
+#  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
+

@@ -8,13 +8,13 @@
 
 instruction_text = [
     #classifcation
-    ["classify",
-    "    In this experiment, you will be learning about two kinds of\n\
-    plant life called Lape and Tannet. On each trial, you will be shown an\n\
-    example of either a Lape leaf or a Tannet leaf. Your job is to select the\n\
-    correct category by choosing options with the mouse. You will receive\n\
-    feedback on each response -- this will help you learn the categories. At\n\
-    first you will have to guess, but you will gain experience as you go along.\n\
+    ["classify_train",
+    "    In this experiment, you will be learning about two kinds of plant\n\
+    life called Lape and Tannet.  On each trial, you will be shown an example\n\
+    of either a Lape leaf or a Tannet leaf.  Your job is to select the correct\n\
+    category by choosing options with the mouse. You will receive feedback\n\
+    on each response - this will help you learn the categories.  At first you\n\
+    will have to guess, but you will gain experience as you go along.\n\
     \n\
     Press the spacebar when you are ready to begin."],
 
@@ -46,7 +46,7 @@ instruction_text = [
     Press the spacebar to continue."],
 
     #inference test
-    ["inferencetest",
+    ["inference_test",
     "    In this part of the experiment, you will be shown a set of partial\n\
     leaves.  Either some information will be absent -- or in the case of missing\n\
     color information, the image will be shown in black. \n\n\
@@ -59,7 +59,7 @@ instruction_text = [
     Press the spacebar when you are ready to begin."],
 
     #classify test
-    ["classifytest",
+    ["classify_test",
     "    In this part of the experiment, you will be shown a set of leaves.\n\
     Some will be incomplete, and others will be presented in full.\n\
     Your job is to select the correct type (category) for each leaf.\n\
@@ -68,7 +68,7 @@ instruction_text = [
     Press the spacebar when you are ready to begin."],
     
     #switch test
-    ["switchtest",
+    ["switch_test",
     "    In this part of the experiment, you will be shown more leaves.\n\
     Your job is to select which parts of the leaves you would change in \n\
     order to transform the example into a member of the requested category.\n\
@@ -115,7 +115,7 @@ instruction_text = [
     Press the spacebar when you are ready to begin."],    
     
     #exit screen
-    '    Thank you for participating in this experiment.\n\
-    Please inform your experimenter that you are ready\n\
-    to move on to the next part of the study.']
+    '    Thank you for participating in this experiment!\n\
+    Please inform the experimenter that you are ready\n\
+    to move on to the next study.']
  

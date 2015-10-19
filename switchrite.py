@@ -32,7 +32,7 @@ conditions      = range(1,7)
 ##___________________________________
 ##              SHJ2    SHJ3    SHJ4|
 ## classify     1       2       3   |
-## switch      4       5       6   |
+## switch       4       5       6   |
 ##__________________________________|
 
 # Cosmetics
@@ -41,7 +41,7 @@ text_font  = 'Consolas'
 text_size  = 22
 
 image_start        = [0,150]
-image_sizes        = [[195, 231],[130,154]] # build image and option images, in pix
+image_sizes        = [[195, 231],[130,154]] # size of images in pix
 category_names     = ['Lape','Tannet']
 feature_names_orig = ['Color','Veining','Shape']
 
@@ -52,18 +52,22 @@ if sys.platform == 'darwin' or sys.platform == 'linux2':
         os.getcwd() + '/img/three/']
     subject_files = os.getcwd() + '/subjects/'
     feature_balance_list = np.genfromtxt(
-        os.getcwd() + '/img/balancefeatures.csv',delimiter=',',dtype='int').astype(int)
+        os.getcwd() + '/img/balancefeatures.csv', delimiter = ',',
+            dtype = 'int').astype(int)
     dimension_balance_list = np.genfromtxt(
-        os.getcwd() + '/img/balancedimensions.csv',delimiter=',',dtype='int').astype(int)
+        os.getcwd() + '/img/balancedimensions.csv', delimiter = ',', 
+            dtype = 'int').astype(int)
 else:
     image_directories = [os.getcwd() + '\\img\\one\\', 
         os.getcwd() + '\\img\\two\\',
         os.getcwd() + '\\img\\three\\']
     subject_files = os.getcwd() + '\\subjects\\'
     feature_balance_list = np.genfromtxt(
-        os.getcwd() + '\\img\\balancefeatures.csv',delimiter=',',dtype='int').astype(int)
+        os.getcwd() + '\\img\\balancefeatures.csv', delimiter = ',',
+            dtype = 'int').astype(int)
     dimension_balance_list = np.genfromtxt(
-        os.getcwd() + '\\img\\balancedimensions.csv',delimiter=',',dtype='int').astype(int)
+        os.getcwd() + '\\img\\balancedimensions.csv', delimiter = ',',
+            dtype = 'int').astype(int)
 
 
 # Get Subject Info and Start Window
@@ -73,12 +77,12 @@ else:
 
 # Create Window and Set Logging Option
 if gethostname() not in ['klab1','klab2','klab3']:
-    win = visual.Window(fullscr = True, units = 'pix', color = [1,1,1], screen = 1) 
+    win = visual.Window(fullscr = True, units = 'pix', color = [1,1,1], screen = 0) 
 else:
     win = visual.Window(fullscr = True, units = 'pix',color = [1,1,1])
     check_directory(os.getcwd() + '\\logfiles\\')
     log_file = os.getcwd() + '\\logfiles\\' + str(subject_number)+ '-logfile.txt'
-    while os.path.exists(logfile):
+    while os.path.exists(log_file):
        log_file = log_file + '_dupe.txt'
     log_file = open(log_file,'w')
     sys.stdout = log_file
@@ -106,8 +110,9 @@ for i in image_directories:
                 j, prop])
 
 # Counterbalance Dimensions
-[stimuli, balance_condition, feature_names, dimension_assignment] = counterbalance(
-    subject_number, stimuli, feature_balance_list, dimension_balance_list, feature_names_orig)
+[stimuli, balance_condition, feature_names, dimension_assignment] = (
+    counterbalance(subject_number, stimuli, feature_balance_list, 
+        dimension_balance_list, feature_names_orig))
 
 print '--------STIMULUS INFO--------'
 for i in stimuli:
@@ -156,8 +161,8 @@ subject_data = [[current_time], [condition, subject_number, balance_condition]]
 # Load Instructions
 #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
 from instructs import *
-instructions = visual.TextStim(win, text = '', wrapWidth = 2000, color = text_color,
-	font = text_font, height = text_size)
+instructions = visual.TextStim(win, text = '', wrapWidth = 2000, 
+    color = text_color, font = text_font, height = text_size)
 fix_cross = visual.TextStim(win, text = '+', pos = image_start, wrapWidth = 1000,
 	color = text_color, font = text_font, height = text_size)
 
@@ -166,19 +171,42 @@ continue_string = '\n\
 Click anywhere to continue.'
 
 
-# Initiate Experiment Phases -> this might need to be counterbalanced
+# Initiate Experiment Phases
 #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
+num_training_blocks = 10
+
 if train_condition == 'classify':
-    num_training_blocks = 1
-    execfile('train_classify.py')
-    execfile('test_inference.py')
-    execfile('test_switch.py')
-    execfile('test_classify.py')
-
+    if subject_number % 2 == 1: 
+        execfile('train_classify.py')
+        execfile('test_inference.py')
+        execfile('test_switch.py')
+        execfile('test_classify.py')
+    else:
+        execfile('train_classify.py')
+        execfile('test_inference.py')
+        execfile('test_classify.py')
+        execfile('test_switch.py')
 else:
-    num_training_blocks = 1
-    execfile('train_switch.py')
-    execfile('test_inference.py')
-    execfile('test_classify.py')
-    execfile('test_switch.py')
+    if subject_number % 2 == 1:
+        execfile('train_switch.py')
+        execfile('test_inference.py')
+        execfile('test_switch.py')
+        execfile('test_classify.py')        
+    else:
+        execfile('train_switch.py')
+        execfile('test_inference.py')
+        execfile('test_classify.py')
+        execfile('test_switch.py')
 
+# Exit screen
+#  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
+instructions.setText(instruction_text[-1])
+instructions.draw()
+win.flip()
+event.waitKeys()
+
+print '\nExperiment completed'
+if gethostname() in ['klab1', 'klab2', 'klab3']:
+    copy_2_db(subject_file, experiment_name)
+    log_file.close()
+    os.system("TASKKILL /F /IM pythonw.exe")
