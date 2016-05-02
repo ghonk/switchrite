@@ -12,7 +12,7 @@
 """
 __author__  = "g_honk"
 __credits__ = "n_conaway"
-__status__  = "pilot"
+__status__  = "real_deal"
 __license__ = "GPL"
 
 #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #                                                     
